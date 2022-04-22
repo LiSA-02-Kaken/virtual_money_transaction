@@ -4,5 +4,5 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"result":"ok"}
+    return {"result":"ok!"}
 
