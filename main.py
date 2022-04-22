@@ -6,6 +6,3 @@ app = FastAPI()
 def root():
     return {"result":"ok"}
 
-@app.get("/aiueo")
-def aiueo():
-    return {"result":"AIUEO"}
