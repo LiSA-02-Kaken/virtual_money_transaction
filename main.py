@@ -6,3 +6,4 @@ app = FastAPI()
 def root():
     return {"result":"ok"}
 
+
