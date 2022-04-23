@@ -14,6 +14,7 @@ class Token(BaseModel):
 
 class User(BaseModel):
     name: str
+    balance: int
     class Config:
         orm_mode = True
 
@@ -21,6 +22,8 @@ class User(BaseModel):
 async def login(form: OAuth2PasswordRequestForm = Depends()):
     user = authenticate(form.username, form.password)
     return generate_tokens(user.id)
+
+#@app.post("/transaction/pay")
 
 @app.get("/refresh_token", response_model=Token)
 async def refresh_token(current_user: User = Depends(get_user_from_refresh_token)):
