@@ -130,3 +130,6 @@ dmypy.json
 
 # venv 
 .virtual_money_transaction_env/
+
+# secret
+secret.py
