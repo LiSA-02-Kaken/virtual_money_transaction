@@ -73,7 +73,8 @@ curl -X GET "http://example.com/users/me/" -H  "accept: application/json" -H  "A
 
 ```json
 {
-  "name": "NAME"
+  "name": "NAME",
+  "balance": 0
 }
 ```
 <br>
