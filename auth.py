@@ -15,7 +15,6 @@ def authenticate(name: str, password: str):
         raise HTTPException(status_code=401, detail="Password does not match.")
     return user
 
-
 def generate_tokens(user_id: int):
 
     access_pl = {
@@ -52,10 +51,10 @@ def get_user_from_token(token: str, token_type: str):
 
     return user
 
+
 async def get_user(token: str = Depends(scheme)):
     return get_user_from_token(token, 'access_token')
 
 async def get_user_from_refresh_token(token: str = Depends(scheme)):
     return get_user_from_token(token, 'refresh_token')
-
 
