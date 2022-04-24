@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
-from jose import jwt
+from jose import JWTError, jwt
 from models import User
 from secret import JWT_TOKEN, OAUTH_TOKEN
 from pass_hexdigest import gen_hash
@@ -37,8 +37,10 @@ def generate_tokens(user_id: int):
 
 
 def get_user_from_token(token: str, token_type: str):
-
-    payload = jwt.decode(token, JWT_TOKEN, algorithms=['HS256'])
+    try:
+        payload = jwt.decode(token, JWT_TOKEN, algorithms=['HS256'])
+    except JWTError:
+        raise HTTPException(status_code=419, detail="Token expired")
 
     if payload['token_type'] != token_type:
         raise HTTPException(status_code=401, detail='Token type does not match.')

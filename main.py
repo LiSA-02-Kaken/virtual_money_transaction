@@ -4,6 +4,7 @@ from peewee import DoesNotExist
 from pydantic import BaseModel
 from auth import get_user, get_user_from_refresh_token, generate_tokens, authenticate
 from models import Shop
+import models
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
@@ -39,6 +40,15 @@ async def payment(request: Request, user: User = Depends(get_user), pay_balance:
     except DoesNotExist:
         raise HTTPException(status_code=404, detail='The shop does not exist.')
 
+    if pay_balance <= 0 or pay_balance > 100000:
+        raise HTTPException(status_code=400, detail="Invalid payment amount.")
+    
+    if user.balance < pay_balance:
+        raise HTTPException(status_code=400, detail="Insufficient balance.")
+
+    payment_balance = user.balance - pay_balance
+    models.User.update(balance=payment_balance).where(models.User.id == user.id).execute()
+    
     shop_balance = shop.balance
     Shop.update(balance=shop_balance+pay_balance).where(Shop.shopid == req_shop).execute()
 
@@ -49,5 +59,5 @@ async def refresh_token(current_user: User = Depends(get_user_from_refresh_token
     return generate_tokens(current_user.id)
 
 @app.get("/users/me/", response_model=User)
-async def read_me(current_user: User = Depends(get_user)):
-    return current_user
+async def read_me(request: Request, current_user: User = Depends(get_user)):
+    return templates.TemplateResponse("profile.html", context={'request': request, 'name': current_user.name, 'balance': current_user.balance})

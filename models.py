@@ -21,8 +21,10 @@ class Shop(Model):
         database = db
 
 
-db.create_tables([User])
-db.create_tables([Shop])
+if __name__ == "__main__":
 
-Shop.create(name='lisa', shopid="u7ab4")
-User.create(name='naxii', password=gen_hash("aiueo"))
+    db.create_tables([User])
+    db.create_tables([Shop])
+
+    Shop.create(name='lisa', shopid="u7ab4")
+    User.create(name='naxii', password=gen_hash("aiueo"))
