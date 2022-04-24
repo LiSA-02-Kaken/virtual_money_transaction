@@ -35,8 +35,7 @@ async def payment(request: Request):
 @app.post("/transaction/pay")
 async def payment(request: Request, user: User = Depends(get_user), pay_balance: int = Form(...), req_shop: str = Form(...)):
     try:
-        shop = Shop.get(Shop
-        .shopid == req_shop)
+        shop = Shop.get(Shop.shopid == req_shop)
     except DoesNotExist:
         raise HTTPException(status_code=404, detail='The shop does not exist.')
 
