@@ -133,3 +133,6 @@ dmypy.json
 
 # secret
 secret.py
+
+# vscode
+.vscode/
