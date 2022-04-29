@@ -3,8 +3,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from peewee import DoesNotExist
 from pydantic import BaseModel
 from auth import get_user, get_user_from_refresh_token, generate_tokens, authenticate
-from models import Shop
+from models import Shop, SettlementLog
 import models
+from uuid import uuid4
+import datetime
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
@@ -52,7 +54,11 @@ async def payment(request: Request, user: User = Depends(get_user), pay_balance:
     shop_balance = shop.balance
     Shop.update(balance=shop_balance+pay_balance).where(Shop.shopid == req_shop).execute()
 
-    return templates.TemplateResponse("done.html", context={'request': request, 'result': pay_balance, 'user': user.name, 'shop_name': shop.name})
+    session_id = str(uuid4())[:8]
+
+    SettlementLog.create(session=session_id, user=user.name, shop=shop.name, balance=pay_balance, time=datetime.datetime.now())
+
+    return templates.TemplateResponse("done.html", context={'request': request, 'result': pay_balance, 'user': user.name, 'shop_name': shop.name, 'sid': session_id})
 
 @app.get("/refresh_token", response_model=Token)
 async def refresh_token(current_user: User = Depends(get_user_from_refresh_token)):

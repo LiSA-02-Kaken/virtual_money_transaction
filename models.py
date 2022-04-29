@@ -22,14 +22,15 @@ class Shop(Model):
     balance = IntegerField(default=0)
     class Meta:
         database = db
-class Log(Model):
+
+class SettlementLog(Model):
     id = AutoField(primary_key=True)
-    session = CharField(16)
+    session = CharField(8)
     user = CharField(100)
     shop = TextField()
     balance = IntegerField()
     time = DateTimeField()
-    option = CharField(50, null=True)
+    option = TextField(null=True)
     class Meta:
         database = db
 
@@ -38,7 +39,9 @@ if __name__ == "__main__":
 
     db.create_tables([User])
     db.create_tables([Shop])
-    db.create_tables([Log])
+    db.create_tables([SettlementLog])
 
     Shop.create(name='lisa', shopid="u7ab4")
-    User.create(name='naxii', password=gen_hash("aiueo"))
+    User.create(name='naxii', password=gen_hash("aiueo"), balance=10000)
+
+    print("Task completed successfully.\nこれはテストモデルの作成です。")
