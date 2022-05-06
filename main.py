@@ -1,7 +1,6 @@
 from fastapi import Depends, FastAPI, Form, Request, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_jwt_auth import AuthJWT
-from fastapi_jwt_auth.exceptions import AuthJWTException
+from fastapi.responses import Response
 from peewee import DoesNotExist
 from pydantic import BaseModel
 from auth import get_user, get_user_from_refresh_token, generate_tokens, authenticate
@@ -28,21 +27,22 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
-class Settings(BaseModel):
-    authjwt_secret_key: str = JWT_TOKEN
 
-    authjwt_token_location: set = {"cookies"}
+@app.get('/login')
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", context={'request': request})
 
-    authjwt_cookie_csrf_protect: bool = False
+@app.post('/login')
+async def login(request: Request, name: str = Form(...), pw: str = Form(...)):
+    user = authenticate(name, pw)
+    template_response =  templates.TemplateResponse("login-done.html", context={'request': request, 'name': user.name})
+    template_response.set_cookie(key="access", value="aaaaa")
+    template_response.set_cookie(key="refresh", value=str(generate_tokens(user.id, "refresh")))
+    return template_response
 
-@AuthJWT.load_config
-def get_config():
-    return Settings()
-
-@app
 
 @app.post("/token", response_model=Token)
-async def login(form: OAuth2PasswordRequestForm = Depends()):
+async def token(form: OAuth2PasswordRequestForm = Depends()):
     user = authenticate(form.username, form.password)
     return generate_tokens(user.id)
 
@@ -75,6 +75,13 @@ async def payment(request: Request, user: User = Depends(get_user), pay_balance:
     SettlementLog.create(session=session_id, user=user.name, shop=shop.name, balance=pay_balance, time=datetime.datetime.now())
 
     return templates.TemplateResponse("done.html", context={'request': request, 'result': pay_balance, 'user': user.name, 'shop_name': shop.name, 'sid': session_id})
+
+
+@app.get("/protected")
+def protected(A):
+
+    return {"result": user}
+
 
 @app.get("/refresh_token", response_model=Token)
 async def refresh_token(current_user: User = Depends(get_user_from_refresh_token)):

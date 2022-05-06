@@ -15,7 +15,7 @@ def authenticate(name: str, password: str):
         raise HTTPException(status_code=401, detail="Password does not match.")
     return user
 
-def generate_tokens(user_id: int):
+def generate_tokens(user_id: int, return_type = None):
 
     access_pl = {
         'token_type': 'access_token',
@@ -32,6 +32,11 @@ def generate_tokens(user_id: int):
     refresh_token = jwt.encode(refresh_pl, JWT_TOKEN, algorithm="HS256")
 
     User.update(refresh_token=refresh_token).where(User.id == user_id).execute()
+
+    if return_type == "access":
+        return access_token
+    elif return_type == "refresh":
+        return refresh_token
 
     return {'access_token': access_token, 'refresh_token': refresh_token, 'type': 'bearer'}
 
