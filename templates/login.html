@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <form  method="post">
-        <input type="text" name="name" value="">
-        <input type="password" name="pw">
-        <input type="submit" value="Login">
-    </form>
-</body>
-</html>
+{%- extends "layout.html" %}
+{%- block content %}
+    <form method="post">
+        <div class="mb-3">
+          <label for="nameinput" class="form-label">ログインID</label>
+          <input type="text" class="form-control" name="name">
+          <div id="nameHelp" class="form-text">あなたのログインIDを入力...</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">パスワード</label>
+          <input type="password" class="form-control" name="pw">
+        </div>
+        <button type="submit" class="btn btn-primary">ログイン</button>
+      </form>
+{%- endblock %}

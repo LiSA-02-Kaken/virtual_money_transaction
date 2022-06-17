@@ -1,11 +1,11 @@
 from fastapi import Depends, FastAPI, Form, Request, HTTPException, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import Response
-<<<<<<< HEAD
+
 from fastapi.staticfiles import StaticFiles
-=======
+
 from typing import Optional
->>>>>>> 523440163b026ea4d2f3c6411ccbbf0842b0afcc
+from auth import get_user_from_token
 from peewee import DoesNotExist
 from pydantic import BaseModel
 from auth import get_user, get_user_from_refresh_token, generate_tokens, authenticate
@@ -36,7 +36,7 @@ class User(BaseModel):
 
 @app.get('/')
 async def home(request: Request):
-    return templates.TemplateResponse("home.html", context={'request': request})
+    return templates.TemplateResponse("home.html", context={'request': request, 'title': "こんにちは。"})
 
 @app.get('/login')
 async def login(request: Request):
@@ -45,12 +45,10 @@ async def login(request: Request):
 @app.post('/login')
 async def login(request: Request, name: str = Form(...), pw: str = Form(...)):
     user = authenticate(name, pw)
-    template_response =  templates.TemplateResponse("login-done.html", context={'request': request, 'name': user.name})
-<<<<<<< HEAD
-    template_response.set_cookie(key="access", value="") #伏せ字にしたいというか暗号化した
-=======
+    
+    template_response =  templates.TemplateResponse("login-done.html", context={'request': request, 'name': user.name, 'title': 'ログインしました。'})
     template_response.set_cookie(key="access", value=str(generate_tokens(user.id, "access")))
->>>>>>> 523440163b026ea4d2f3c6411ccbbf0842b0afcc
+
     template_response.set_cookie(key="refresh", value=str(generate_tokens(user.id, "refresh")))
     return template_response
 
@@ -98,7 +96,8 @@ async def refresh_token(current_user: User = Depends(get_user_from_refresh_token
 
 @app.get("/users/me/", response_model=User)
 async def read_me(request: Request, access: Optional[str]=Cookie(None), refresh: Optional[str]=Cookie(None)):
-    user = get_user_from_token(access, "access")
+    print(access)
+    user = get_user_from_token(access, "access_token")
     # リダイレクトのホストがきもくなってる
     
     return templates.TemplateResponse("profile.html", context={'request': request, 'name': user.name, 'balance': user.balance})
