@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment</title>
-</head>
-<body>
-    <h1>支払いの確認</h1>
-    <p>支払金額の入力</p>
-    <form  method="post">
-        <input type="text" name="req_shop" value="">
-        <input type="number" name="pay_balance" value="0">
-        <input type="submit">
-    </form>
-</body>
-</html>
+{%- extends "layout.html" %}
+{%- block content %}
+    <form method="post">
+        <div class="mb-3">
+          <label for="nameinput" class="form-label">ShopID</label>
+          <input type="text" class="form-control" name="req_shop" value="u7ab4">
+          <div id="nameHelp" class="form-text">あなたのログインIDを入力...</div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">お支払金額</label>
+          <input type="text" class="form-control" name="pay_balance" value="0">
+        </div>
+        <button type="submit" class="btn btn-success">決済する</button>
+      </form>
+{%- endblock %}

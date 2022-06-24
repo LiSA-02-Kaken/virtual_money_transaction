@@ -59,16 +59,26 @@ async def token(form: OAuth2PasswordRequestForm = Depends()):
     return generate_tokens(user.id)
 
 @app.get("/transaction/pay")
-async def payment(request: Request):
-    return templates.TemplateResponse("payment.html", context={'request': request})
+async def payment(request: Request, access: Optional[str]=Cookie(None)):
+    #もしログインしていない場合はとばす
+    if access is None:
+        return templates.TemplateResponse("home.html", context={'request': request})
+    return templates.TemplateResponse("payment.html", context={'request': request, 'title': '決済を行う'})
 
 
 @app.post("/transaction/pay")
-async def payment(request: Request, user: User = Depends(get_user), pay_balance: int = Form(...), req_shop: str = Form(...)):
+async def payment(
+    request: Request, 
+    access: Optional[str]=Cookie(None), 
+    pay_balance: int = Form(...), 
+    req_shop: str = Form(...)):
+
     try:
         shop = Shop.get(Shop.shopid == req_shop)
     except DoesNotExist:
         raise HTTPException(status_code=404, detail='The shop does not exist.')
+
+    user = get_user_from_token(access, "access_token")
 
     if pay_balance <= 0 or pay_balance > 100000:
         raise HTTPException(status_code=400, detail="Invalid payment amount.")
