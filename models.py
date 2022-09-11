@@ -1,4 +1,4 @@
-from peewee import SqliteDatabase, Model, AutoField, CharField, TextField, IntegerField, DateTimeField
+from peewee import SqliteDatabase, Model, AutoField, CharField, TextField, IntegerField, DateTimeField, BooleanField
 from pass_hexdigest import gen_hash
 
 db = SqliteDatabase('db.sqlite3')

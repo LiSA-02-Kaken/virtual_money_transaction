@@ -5,6 +5,7 @@
 import sys
 from peewee import *
 from models import *
+from uuid import uuid4
 
 db = SqliteDatabase("db.sqlite3")
 
@@ -18,6 +19,12 @@ def debugger():
             raise Exception("N/A")
         else:
             info(dbg_db_select(opt[2]))
+    elif opt[1] == "shopgen":
+        name = opt[2]
+        id = str(uuid4())[:5]
+        Shop.create(name=name, shopid=id)
+        info(f"SUCCESS.")
+        info(f"ID: {id}")
             
     else:
         raise Exception("No such option.")

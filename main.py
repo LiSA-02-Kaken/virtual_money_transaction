@@ -1,9 +1,7 @@
 from fastapi import Depends, FastAPI, Form, Request, HTTPException, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import Response
-
 from fastapi.staticfiles import StaticFiles
-
 from typing import Optional
 from auth import get_user_from_token
 from peewee import DoesNotExist
