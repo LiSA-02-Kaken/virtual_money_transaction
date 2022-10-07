@@ -13,6 +13,7 @@ from secret import JWT_TOKEN
 from uuid import uuid4
 import datetime
 from fastapi.templating import Jinja2Templates
+import uvicorn
 
 app = FastAPI()
 templates = Jinja2Templates(directory='templates/')
@@ -55,6 +56,12 @@ async def login(request: Request, name: str = Form(...), pw: str = Form(...)):
 async def token(form: OAuth2PasswordRequestForm = Depends()):
     user = authenticate(form.username, form.password)
     return generate_tokens(user.id)
+
+@app.get("/transaction/history")
+async def payment_history(request: Request):
+    transaction_history = SettlementLog.select()
+    #print(transaction_history.session)
+    return templates.TemplateResponse("history.html", context={'request': request})
 
 @app.get("/transaction/pay")
 async def payment(request: Request, access: Optional[str]=Cookie(None)):
@@ -109,3 +116,8 @@ async def read_me(request: Request, access: Optional[str]=Cookie(None), refresh:
     # リダイレクトのホストがきもくなってる
     
     return templates.TemplateResponse("profile.html", context={'request': request, 'name': user.name, 'balance': user.balance})
+
+
+if __name__ == "__main__":
+    print("START")
+    uvicorn.run(app)
