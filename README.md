@@ -1,4 +1,4 @@
-# Virtual Money Transaction 
+# LiSA Coin (Virtual Money Transaction)
 2022 情報系課題研究用 <br>
 
 ## How to Use
@@ -89,7 +89,24 @@ curl -X GET "http://example.com/users/me/" -H  "accept: application/json" -H  "A
 サーバーは`refresh_token`の有効期限内かを確認しデータベースと情報が一致するか検証します。<br>
 正常に認証されればクライアントが正規ユーザーとして扱われ、そのユーザーの`user_id`に基づき新しい`access_token`が発行されます。
 
+## データベース
+LiSA Coin のデータはすべてデータベースにて管理します。
+### トランザクションログ
+取引記録は以下のように保存します。データベースは MySQL を使用します。<br>
+`id`,`session`,`user`,`shop`,`balance`,`time`,`option`を記録します。
 
+```sql
+CREATE TABLE "settlementlog" (
+	"id" INTEGER NOT NULL,
+	"session" VARCHAR(8) NOT NULL,
+	"user" VARCHAR(100) NOT NULL,
+	"shop" TEXT NOT NULL,
+	"balance" INTEGER NOT NULL,
+	"time" DATETIME NOT NULL,
+	"option" TEXT NULL,
+	PRIMARY KEY ("id")
+);
+```
 
 ## Branch
 `master`ブランチは完成形を保管したいので基本的にブランチは自分のものを作りましょう。
