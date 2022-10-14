@@ -39,7 +39,7 @@ if __name__ == "__main__":
     db.create_tables([Shop])
     db.create_tables([SettlementLog])
 
-    Shop.create(name='lisa', shopid="u7ab4")
-    User.create(name='naxii', password=gen_hash("aiueo"), balance=10000)
+    Shop.create(name='Kadai Kenkyu Test Server', shopid="u7ab4")
+    #User.create(name='naxii', password=gen_hash("aiueo"), balance=10000)
 
     print("Task completed successfully.\nこれはテストモデルの作成です。")

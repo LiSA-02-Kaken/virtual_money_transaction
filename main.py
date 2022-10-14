@@ -60,8 +60,18 @@ async def token(form: OAuth2PasswordRequestForm = Depends()):
 @app.get("/transaction/history")
 async def payment_history(request: Request):
     transaction_history = SettlementLog.select()
-    #print(transaction_history.session)
-    return templates.TemplateResponse("history.html", context={'request': request})
+    session = [session.session for session in transaction_history]
+    user = [user.user for user in transaction_history]
+    balance = [balance.balance for balance in transaction_history]
+    time = [time.time for time in transaction_history]
+    shop = [shop.shop for shop in transaction_history]
+
+    result = []
+    for (session, user, balance, time, shop) in zip(session, user, balance, time, shop):
+        result.append({'session': session, 'user': user, 'balance': balance, 'time': time, 'shop': shop})
+    
+
+    return templates.TemplateResponse("history.html", context={'request': request, 'result': result})
 
 @app.get("/transaction/pay")
 async def payment(request: Request, access: Optional[str]=Cookie(None)):

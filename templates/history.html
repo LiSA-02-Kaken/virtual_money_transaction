@@ -2,21 +2,15 @@
 {%- block content %}
 
 <div class="list-group">
+  {% for transaction in result %}
     <a href="#" class="list-group-item list-group-item-action">
       <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">List group item heading</h5>
-        <small class="text-muted">3 days ago</small>
+        <h5 class="mb-1"> ⏩ {{transaction.user}} から {{transaction.shop}} への送金</h5>
+        <small class="text-muted">{{transaction.session}}</small>
       </div>
-      <p class="mb-1">Some placeholder content in a paragraph.</p>
-      <small class="text-muted">And some muted small print.</small>
+      <p class="mb-1">{{transaction.balance}} 円のトランザクションを確認しました。</p>
+      <small class="text-muted">{{transaction.time}}</small>
     </a>
-    <a href="#" class="list-group-item list-group-item-action">
-      <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">List group item heading</h5>
-        <small class="text-muted">3 days ago</small>
-      </div>
-      <p class="mb-1">Some placeholder content in a paragraph.</p>
-      <small class="text-muted">And some muted small print.</small>
-    </a>
+    {%- endfor %}
   </div>
 {%- endblock %}
