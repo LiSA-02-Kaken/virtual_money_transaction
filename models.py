@@ -1,11 +1,12 @@
 from peewee import SqliteDatabase, Model, AutoField, CharField, TextField, IntegerField, DateTimeField, BooleanField
 from pass_hexdigest import gen_hash
-
+from uuid import uuid4
 db = SqliteDatabase('db.sqlite3')
 
 
 class User(Model):
     id = AutoField(primary_key=True)
+    uuid = CharField(8, default=str(uuid4())[:8])
     name = CharField(100)
     password = CharField(128)
     refresh_token = TextField(null=True)
@@ -28,6 +29,7 @@ class SettlementLog(Model):
     shop = TextField()
     balance = IntegerField()
     time = DateTimeField()
+    hash = CharField(128)
     option = TextField(null=True)
     class Meta:
         database = db
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     db.create_tables([Shop])
     db.create_tables([SettlementLog])
 
-    Shop.create(name='Kadai Kenkyu Test Server', shopid="u7ab4")
+    #Shop.create(name='Kadai Kenkyu Test Server', shopid="u7ab4")
     #User.create(name='naxii', password=gen_hash("aiueo"), balance=10000)
 
     print("Task completed successfully.\nこれはテストモデルの作成です。")

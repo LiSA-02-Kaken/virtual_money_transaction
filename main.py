@@ -1,8 +1,8 @@
-from fastapi import Depends, FastAPI, Form, Request, HTTPException, Cookie
+from fastapi import Depends, FastAPI, Form, Request, HTTPException, Cookie, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
-from typing import Optional
+from typing import Optional, List, Union
 from auth import get_user_from_token
 from peewee import DoesNotExist
 from pydantic import BaseModel
@@ -14,6 +14,9 @@ from uuid import uuid4
 import datetime
 from fastapi.templating import Jinja2Templates
 import uvicorn
+import os
+import hashlib
+import qrcode
 
 app = FastAPI()
 templates = Jinja2Templates(directory='templates/')
@@ -69,9 +72,37 @@ async def payment_history(request: Request):
     result = []
     for (session, user, balance, time, shop) in zip(session, user, balance, time, shop):
         result.append({'session': session, 'user': user, 'balance': balance, 'time': time, 'shop': shop})
-    
 
     return templates.TemplateResponse("history.html", context={'request': request, 'result': result})
+
+@app.get("/transaction/view/")
+async def payment_view(request: Request, session: str = Query(default="nothing", min_length=5)):
+    if session == "nothing":
+        return templates.TemplateResponse("home.html", context={'request': request})
+    settlement_query = SettlementLog.get(SettlementLog.session == session)
+
+    shop = settlement_query.shop
+    shop_id = Shop.get(Shop.name == shop).shopid
+    balance = settlement_query.balance
+    time = settlement_query.time
+    user = settlement_query.user
+    obj_hash = SettlementLog.get(SettlementLog.session == session).hash
+    
+    is_qr = os.path.isfile(f"static/img/{session}.png")
+    if not is_qr:
+        qr_img = qrcode.make(f"http://localhost:8000/transaction/view/?session={session}")
+        qr_img.save(f"static/img/{session}.png")
+    #print(SettlementLog.get(SettlementLog.session == session).balance)
+
+    return templates.TemplateResponse("view.html", context={'request': request, 
+                                                            'session': session,
+                                                            'shop_id': shop_id,
+                                                            'shop': shop,
+                                                            'balance': balance,
+                                                            'time': time,
+                                                            'user': user,
+                                                            'hash': obj_hash,
+                                                            'img_uri': f"/static/img/{session}.png"})
 
 @app.get("/transaction/pay")
 async def payment(request: Request, access: Optional[str]=Cookie(None)):
@@ -109,7 +140,11 @@ async def payment(
 
     session_id = str(uuid4())[:8]
 
-    SettlementLog.create(session=session_id, user=user.name, shop=shop.name, balance=pay_balance, time=datetime.datetime.now())
+    hash_before = str(session_id + str(pay_balance) + str(datetime.datetime.now()))
+    hash = hashlib.sha256(hash_before.encode()).hexdigest()
+    print(f"内部{hash_before}のハッシュ({hash}を生成しました。")
+
+    SettlementLog.create(session=session_id, user=user.name, shop=shop.name, hash=hash, balance=pay_balance, time=datetime.datetime.now())
 
     return templates.TemplateResponse("done.html", context={'request': request, 'result': pay_balance, 'user': user.name, 'shop_name': shop.name, 'sid': session_id})
 

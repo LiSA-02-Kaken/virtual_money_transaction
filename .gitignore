@@ -134,5 +134,8 @@ dmypy.json
 # secret
 secret.py
 
+# static img
+static/img/
+
 # vscode
 .vscode/

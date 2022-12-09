@@ -1,0 +1,45 @@
+{%- extends "layout.html" %}
+{%- block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <img src={{img_uri}} alt={{session}}/>
+        </div>
+        <div class="col-6">
+            <div class="border-bottom" style="padding:10px;"><h1>通常トランザクション <span class="badge bg-secondary">{{session}}</span></h1></div>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">詳細</h4>
+                    <h5 class="card-subtitle mb-2 text-muted">Description</h6>
+
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">支払先</th>
+                            <th scope="col">支払ユーザー</th>
+                            <th scope="col">支払金額</th>
+                            <th scope="col">決済記録時刻(JP)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">{{shop}} ({{shop_id}})</th>
+                            <td>{{user}}</td>
+                            <td>{{balance}}</td>
+                            <td>{{time}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="card border-success mb-3">
+                        <div class="card-body text-success">
+                          <h5 class="card-title">✓ 整合性を検証しました ✓</h5>
+                          <p class="card-text">決済時のハッシュ値と現在表示されているハッシュ値でトランザクションの偽造を確認することができます。</p>
+                          <p class="card-text">データベース上のハッシュ値: <br> <code>{{hash}}</code></p>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endblock %}
